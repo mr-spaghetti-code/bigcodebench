@@ -1,8 +1,14 @@
 import json
 import os
+import asyncio
+
 from abc import ABC, abstractmethod
+from dotenv import load_dotenv
+from moa_llm.config_loader import create_moa_from_config
 from typing import List
 from warnings import warn
+
+load_dotenv('.env.local')
 
 import openai
 
@@ -264,7 +270,7 @@ class GenenralHfTorchDecoder(HfTorchDecoder):
 class OpenAIChatDecoder(DecoderBase):
     def __init__(self, name: str, base_url=None, **kwargs) -> None:
         super().__init__(name, **kwargs)
-        self.client = openai.OpenAI(base_url=base_url)
+        self.client = openai.OpenAI(base_url=base_url, api_key=os.getenv('OPENAI_API_KEY'))
 
     def codegen(
         self, prompt: str, do_sample: bool = True, num_samples: int = 200
@@ -313,6 +319,32 @@ class OpenAIChatDecoder(DecoderBase):
     def is_direct_completion(self) -> bool:
         return False
 
+class MoaDecoder(DecoderBase):
+    def __init__(self, name: str, yaml_config: str, **kwargs) -> None:
+        super().__init__(name, **kwargs)
+        self.moa = create_moa_from_config(yaml_config)
+
+    def is_direct_completion(self) -> bool:
+        return False
+
+    def codegen(
+        self, prompt: str, do_sample: bool = True, num_samples: int = 200
+    ) -> List[str]:
+        kwargs = {}
+        if do_sample:
+            assert self.temperature > 0, "Temperature must be positive for sampling"
+            kwargs["temperature"] = self.temperature
+        else:
+            self.temperature = 0
+
+        batch_size = min(self.batch_size, num_samples)
+
+        outputs = []
+        for _ in range(batch_size):
+            result = asyncio.run(self.moa.process(prompt))
+            outputs.append(result['content'])
+
+        return outputs
 
 class MistralChatDecoder(DecoderBase):
     def __init__(self, name: str, **kwargs) -> None:
@@ -535,6 +567,15 @@ def make_model(
     elif backend == "google":
         return GeminiDecoder(
             name=model,
+            batch_size=batch_size,
+            temperature=temperature,
+        )
+    elif backend == "moa":
+        # with open(model, 'r') as file:
+        #     yaml_config = file.read()
+        return MoaDecoder(
+            name="MoA",
+            yaml_config=model,
             batch_size=batch_size,
             temperature=temperature,
         )

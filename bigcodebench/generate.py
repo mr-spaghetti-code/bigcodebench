@@ -115,12 +115,13 @@ def main():
     parser.add_argument("--strip_newlines", action="store_true")
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--id_range", nargs=2, type=int)
-    parser.add_argument("--backend", default="vllm", type=str, choices=["vllm", "hf", "openai", "mistral", "anthropic", "google"])
+    parser.add_argument("--backend", default="vllm", type=str, choices=["vllm", "hf", "openai", "mistral", "anthropic", "google", "moa"])
     parser.add_argument("--base_url", default=None, type=str)
     parser.add_argument("--tp", default=1, type=int)
     parser.add_argument("--trust_remote_code", action="store_true")
     parser.add_argument("--tokenizer_legacy", action="store_true")
     parser.add_argument("--tokenizer_name", default=None, type=str)
+
 
     args = parser.parse_args()
 

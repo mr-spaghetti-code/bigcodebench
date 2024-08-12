@@ -7,6 +7,10 @@ N_SAMPLES=1
 NUM_GPU=1
 SPLIT=complete
 SUBSET=hard
+MOA_CONFIG=""
+if [ "$BACKEND" = "moa" ]; then
+    MOA_CONFIG="/path/to/moa_config.yaml"
+fi
 if [[ $MODEL == *"/"* ]]; then
   ORG=$(echo $MODEL | cut -d'/' -f1)--
   BASE_MODEL=$(echo $MODEL | cut -d'/' -f2)
@@ -23,13 +27,13 @@ if [ "$SUBSET" = "full" ]; then
 
 echo $FILE_HEADER
 bigcodebench.generate \
-  --model $MODEL \
+  --model ${MOA_CONFIG:-$MODEL} \
   --resume \
   --split $SPLIT \
   --subset $SUBSET \
   --backend $BACKEND \
   --greedy
-
+  
 bigcodebench.sanitize --samples $FILE_HEADER.jsonl --calibrate
 
 # Check if the ground truth works on your machine
