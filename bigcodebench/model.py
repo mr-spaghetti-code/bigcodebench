@@ -325,7 +325,7 @@ class MoaDecoder(DecoderBase):
         super().__init__(name, **kwargs)
         config = yaml.safe_load(yaml_config)
         self.moa = create_moa_from_config(config)
-        
+
     def is_direct_completion(self) -> bool:
         return False
 
@@ -577,7 +577,7 @@ def make_model(
             yaml_config = file.read()
         return MoaDecoder(
             name="MoA",
-            yaml_config=model,
+            yaml_config=yaml_config,
             batch_size=batch_size,
             temperature=temperature,
         )
