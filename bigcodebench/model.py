@@ -1,6 +1,7 @@
 import json
 import os
 import asyncio
+import yaml
 
 from abc import ABC, abstractmethod
 from dotenv import load_dotenv
@@ -322,8 +323,9 @@ class OpenAIChatDecoder(DecoderBase):
 class MoaDecoder(DecoderBase):
     def __init__(self, name: str, yaml_config: str, **kwargs) -> None:
         super().__init__(name, **kwargs)
-        self.moa = create_moa_from_config(yaml_config)
-
+        config = yaml.safe_load(yaml_config)
+        self.moa = create_moa_from_config(config)
+        
     def is_direct_completion(self) -> bool:
         return False
 
@@ -571,8 +573,8 @@ def make_model(
             temperature=temperature,
         )
     elif backend == "moa":
-        # with open(model, 'r') as file:
-        #     yaml_config = file.read()
+        with open(model, 'r') as file:
+            yaml_config = file.read()
         return MoaDecoder(
             name="MoA",
             yaml_config=model,
