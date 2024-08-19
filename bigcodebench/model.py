@@ -323,8 +323,8 @@ class OpenAIChatDecoder(DecoderBase):
 class MoaDecoder(DecoderBase):
     def __init__(self, name: str, yaml_config: str, **kwargs) -> None:
         super().__init__(name, **kwargs)
-        config = yaml.safe_load(yaml_config)
-        self.moa = create_moa_from_config(config)
+        # config = yaml.safe_load(yaml_config)
+        self.moa = create_moa_from_config(yaml_config, is_file_path=True)
 
     def is_direct_completion(self) -> bool:
         return False
@@ -573,11 +573,11 @@ def make_model(
             temperature=temperature,
         )
     elif backend == "moa":
-        with open(model, 'r') as file:
-            yaml_config = file.read()
+        # with open(model, 'r') as file:
+        #     yaml_config = file.read()
         return MoaDecoder(
             name="MoA",
-            yaml_config=yaml_config,
+            yaml_config=model,
             batch_size=batch_size,
             temperature=temperature,
         )

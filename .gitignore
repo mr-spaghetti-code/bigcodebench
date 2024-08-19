@@ -172,3 +172,5 @@ bigcodebench/_version.py
 *.jsonl
 inspect/
 *.zip
+.DS_Store
+/analysis

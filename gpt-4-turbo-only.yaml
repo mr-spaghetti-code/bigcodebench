@@ -1,0 +1,8 @@
+proposal_layers:
+  - neurons:
+    - model: gpt-4-turbo-preview
+      temperature: 0.7
+
+use_annotator: false
+use_weights: false
+base_url: https://crosshatch-router-staging.catena-dev.workers.dev
