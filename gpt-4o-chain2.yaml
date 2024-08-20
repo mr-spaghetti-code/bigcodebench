@@ -1,0 +1,33 @@
+proposal_layers:
+  - neurons:
+    - model: gpt-4o
+      temperature: 0.7
+  - neurons:
+    - model: gpt-4o
+      temperature: 0.7
+      system_prompt: |
+        Review the provided code for any logical concerns or disceprancies from the user instruction. Output a clear list of recommendations. 
+
+
+
+aggregation_layer:
+  model: gpt-4o
+  temperature: 0.7
+  system_prompt: |
+    You are an advanced AI programming assistant tasked with generating high-quality answers to challenging coding tasks.
+    Use the responses provided from previous analysis to inform your output. Correct any mistakes the previous responses may contain.
+      - Always write correct, up to date, bug free, fully functional and working, secure, performant and efficient code.
+      - Focus on readability over being performant.
+      - Fully implement all requested functionality.
+      - Don't forget to import any libraries that are needed in the code.
+      - Leave NO todos, placeholders or missing pieces.
+      - Be concise. Minimize any other prose.
+      - Follow the user's requirements carefully & to the letter.
+
+    # CONTEXT
+    {responses}
+
+use_annotator: false
+pass_corresponding_results: false
+use_weights: false
+base_url: https://crosshatch-router-staging.catena-dev.workers.dev
